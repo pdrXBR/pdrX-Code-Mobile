@@ -34,7 +34,6 @@ fun CodeEditor(
 
     val context = LocalContext.current
 
-    // ✅ ENGINE BASE (FUNCIONAL)
     val engine = remember(languageFile) {
         val config = LanguageLoader.load(context, languageFile)
         LanguageEngine(config)
@@ -54,22 +53,42 @@ fun CodeEditor(
 
     val cursor = textFieldValue.selection.start
 
+    // =========================
+    // 🔥 PREFIXO INTELIGENTE
+    // =========================
+    val prefix = textFieldValue.text
+        .take(cursor)
+        .takeLastWhile {
+            it.isLetterOrDigit() || it == '_' || it == '.'
+        }
+
+    val showAutocomplete = prefix.isNotEmpty()
+
+    // =========================
     // 🎨 HIGHLIGHT
+    // =========================
     val highlightedText = remember(textFieldValue.text) {
         highlighter.highlight(textFieldValue.text)
     }
 
+    // =========================
     // ⚡ AUTOCOMPLETE
+    // =========================
     val suggestions = remember(textFieldValue.text, cursor) {
-        autocomplete.getSuggestions(textFieldValue.text, cursor)
+        if (!showAutocomplete) emptyList()
+        else autocomplete.getSuggestions(textFieldValue.text, cursor)
     }
 
+    // =========================
     // 💬 TOOLTIP
+    // =========================
     val tooltipData = remember(tooltipWord) {
         tooltipWord?.let { tooltipEngine.getTooltip(it) }
     }
 
+    // =========================
     // ⚠ LINTER
+    // =========================
     val lintErrors = remember(textFieldValue.text) {
         linter.analyze(textFieldValue.text)
     }
@@ -89,14 +108,16 @@ fun CodeEditor(
                         onLongPress = {
                             tooltipWord = getWordAt(
                                 textFieldValue.text,
-                                textFieldValue.selection.start
+                                cursor
                             )
                         }
                     )
                 }
         ) {
 
+            // =========================
             // 🎨 HIGHLIGHT
+            // =========================
             BasicText(
                 text = highlightedText,
                 style = TextStyle(
@@ -109,7 +130,9 @@ fun CodeEditor(
                     .padding(8.dp)
             )
 
+            // =========================
             // ⌨ INPUT
+            // =========================
             BasicTextField(
                 value = textFieldValue,
                 onValueChange = {
@@ -131,16 +154,24 @@ fun CodeEditor(
                 readOnly = readOnly
             )
 
+            // =========================
             // ⚡ AUTOCOMPLETE UI
-            if (suggestions.isNotEmpty()) {
+            // =========================
+            if (showAutocomplete && suggestions.isNotEmpty()) {
+
                 Column(
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(start = 24.dp, top = 40.dp)
+                        .offset(
+                            x = 8.dp,
+                            y = ((cursor / 25) * 20).dp // simula posição
+                        )
                         .background(Color(0xFF1E1E1E))
                         .width(220.dp)
                 ) {
-                    suggestions.forEach { item: String ->
+
+                    suggestions.take(6).forEach { item ->
+
                         Text(
                             text = item,
                             color = Color.White,
@@ -148,21 +179,18 @@ fun CodeEditor(
                                 .fillMaxWidth()
                                 .clickable {
 
-                                    val prefix = textFieldValue.text
-                                        .take(cursor)
-                                        .takeLastWhile {
-                                            it.isLetterOrDigit() || it == '_'
-                                        }
-
                                     val newText = textFieldValue.text.replaceRange(
                                         cursor - prefix.length,
                                         cursor,
                                         item
                                     )
 
+                                    val newCursor =
+                                        cursor - prefix.length + item.length
+
                                     textFieldValue = TextFieldValue(
                                         newText,
-                                        TextRange(cursor - prefix.length + item.length)
+                                        TextRange(newCursor)
                                     )
 
                                     onCodeChange(newText)
@@ -173,8 +201,11 @@ fun CodeEditor(
                 }
             }
 
+            // =========================
             // 💬 TOOLTIP UI
+            // =========================
             tooltipData?.let { tip ->
+
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -189,7 +220,9 @@ fun CodeEditor(
                 }
             }
 
+            // =========================
             // ⚠ LINTER UI
+            // =========================
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -207,7 +240,9 @@ fun CodeEditor(
     }
 }
 
+// =========================
 // 🔧 UTIL
+// =========================
 private fun getWordAt(text: String, index: Int): String {
     if (text.isEmpty()) return ""
 

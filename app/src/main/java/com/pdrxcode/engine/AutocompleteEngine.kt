@@ -4,28 +4,40 @@ class AutocompleteEngine(
     private val engine: LanguageEngine
 ) {
 
-    fun getSuggestions(text: String, cursorIndex: Int): List<String> {
-
-        val prefix = extractPrefix(text, cursorIndex)
-
-        if (prefix.isBlank()) return emptyList()
+    fun getSuggestions(code: String, cursor: Int): List<String> {
+        val prefix = getCurrentWord(code, cursor)
 
         val keywords = engine.config.keywords.keys
         val functions = engine.config.functions.keys
+        val characters = engine.config.characters.keys
 
-        return (keywords + functions)
-            .filter { it.startsWith(prefix) }
+        return (keywords + functions + characters)
+            .filter { it.startsWith(prefix) && it != prefix }
             .sorted()
-            .take(10)
+            .take(8)
     }
 
-    private fun extractPrefix(text: String, index: Int): String {
-        if (index <= 0) return ""
+    fun applySuggestion(
+        text: String,
+        cursor: Int,
+        suggestion: String
+    ): Pair<String, Int> {
 
-        val sub = text.substring(0, index)
+        val prefix = getCurrentWord(text, cursor)
 
-        return sub.takeLastWhile {
-            it.isLetterOrDigit() || it == '_'
-        }
+        val start = cursor - prefix.length
+
+        val newText = text.replaceRange(start, cursor, suggestion)
+
+        return Pair(newText, start + suggestion.length)
+    }
+
+    private fun getCurrentWord(text: String, cursor: Int): String {
+        if (text.isEmpty()) return ""
+
+        val safeIndex = cursor.coerceIn(0, text.length)
+
+        return text.take(safeIndex)
+            .takeLastWhile { it.isLetterOrDigit() || it == '_' }
     }
 }

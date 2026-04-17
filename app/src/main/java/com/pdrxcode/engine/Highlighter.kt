@@ -1,8 +1,7 @@
 package com.pdrxcode.engine
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.buildAnnotatedString
 
 class Highlighter(
@@ -11,34 +10,39 @@ class Highlighter(
 
     fun highlight(code: String): AnnotatedString {
         val tokens = engine.analyze(code)
+        val defaultColor = Color(0xFFD4D4D4)
 
         return buildAnnotatedString {
             var lastIndex = 0
 
             tokens.forEach { token ->
 
-                // texto entre tokens (normal)
                 if (token.start > lastIndex) {
+                    pushStyle(SpanStyle(color = defaultColor))
                     append(code.substring(lastIndex, token.start))
+                    pop()
                 }
 
-                // cor do token
-                val colorHex = engine.getColor(token.type)
+                val colorHex = if (token.type == "character") {
+                    engine.getCharacter(token.value)?.color
+                        ?: engine.getColor("character")
+                } else {
+                    engine.getColor(token.type)
+                }
+
                 val color = Color(android.graphics.Color.parseColor(colorHex))
 
-                pushStyle(
-                    SpanStyle(color = color)
-                )
-
+                pushStyle(SpanStyle(color = color))
                 append(token.value)
                 pop()
 
-                lastIndex = token.end + 1
+                lastIndex = token.end
             }
 
-            // resto do texto
             if (lastIndex < code.length) {
+                pushStyle(SpanStyle(color = defaultColor))
                 append(code.substring(lastIndex))
+                pop()
             }
         }
     }

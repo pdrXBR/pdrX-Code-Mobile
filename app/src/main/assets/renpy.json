@@ -1,0 +1,54 @@
+{
+  "language": "renpy",
+  "extends": "python",
+
+  "patterns": {
+    "character": "^\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s(?=\")",
+    "renpy_keyword": "\\b(label|scene|show|hide|jump|menu|return|call|play|stop)\\b"
+  },
+
+  "colors": {
+    "renpy_keyword": "#C586C0",
+    "character": "#FFFFFF"
+  },
+
+  "keywords": {
+    "label": {
+      "name": "label",
+      "description": "Define ponto da história",
+      "syntax": "label start:",
+      "example": "label start:\n    scene bg classroom"
+    }
+  },
+
+  "characters": {
+    "m": {
+      "name": "Monika",
+      "description": "Presidente do clube",
+      "syntax": "m \"fala\"",
+      "example": "m \"Olá, [player]\"",
+      "color": "#50FA7B"
+    },
+    "y": {
+      "name": "Yuri",
+      "description": "Garota tímida e inteligente",
+      "syntax": "y \"fala\"",
+      "example": "y \"...\"",
+      "color": "#BD93F9"
+    },
+    "n": {
+      "name": "Natsuki",
+      "description": "Garota tsundere",
+      "syntax": "n \"fala\"",
+      "example": "n \"Hmpf\"",
+      "color": "#FF79C6"
+    },
+    "s": {
+      "name": "Sayori",
+      "description": "Amiga de infância",
+      "syntax": "s \"fala\"",
+      "example": "s \"Ehehe~\"",
+      "color": "#8BE9FD"
+    }
+  }
+}
