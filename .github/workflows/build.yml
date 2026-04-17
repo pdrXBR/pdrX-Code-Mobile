@@ -1,32 +1,37 @@
-name: Build APK
+name: Android CI
 
 on:
   push:
     branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master" ]
-  workflow_dispatch:  # Permite execução manual
 
 jobs:
   build:
-    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do código
+      - name: Checkout
         uses: actions/checkout@v4
-    
-      - name: Setup Java
+
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17' # Ou a versão que seu projeto usa
-          distribution: 'temurin'
-    
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-    
-      - name: Dar permissão de execução ao gradlew
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # O segredo está aqui: dar permissão e usar o Wrapper do projeto
+      - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-    
-      - name: Build com Gradle (pulando C++)
+
+      - name: Build debug APK
+        # Adicionamos o -x para pular o C++ que quebra no seu ambiente
         run: ./gradlew assembleDebug -x externalNativeBuild
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdrXCodeMobile-1.0
+          path: app/build/outputs/apk/debug/*.apk
