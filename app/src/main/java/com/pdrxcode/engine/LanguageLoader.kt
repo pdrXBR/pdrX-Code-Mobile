@@ -24,9 +24,10 @@ object LanguageLoader {
             val item = keywordsJson.getJSONObject(key)
 
             keywords[key] = LanguageItem(
-                description = item.getString("description"),
-                syntax = item.getString("syntax"),
-                example = item.getString("example")
+                name = key, // ✅ CORREÇÃO AQUI
+                description = item.optString("description"),
+                syntax = item.optString("syntax"),
+                example = item.optString("example")
             )
         }
 
@@ -36,9 +37,10 @@ object LanguageLoader {
             val item = functionsJson.getJSONObject(key)
 
             functions[key] = LanguageItem(
-                description = item.getString("description"),
-                syntax = item.getString("syntax"),
-                example = item.getString("example")
+                name = key, // ✅ CORREÇÃO AQUI
+                description = item.optString("description"),
+                syntax = item.optString("syntax"),
+                example = item.optString("example")
             )
         }
 
