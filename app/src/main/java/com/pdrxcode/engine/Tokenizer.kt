@@ -1,3 +1,5 @@
+package com.pdrxcode.engine
+
 class Tokenizer(
     private val config: LanguageConfig
 ) {
@@ -5,14 +7,18 @@ class Tokenizer(
     fun tokenize(code: String): List<Token> {
         val tokens = mutableListOf<Token>()
 
-        config.patterns.forEach { (type, regex) ->
-            Regex(regex).findAll(code).forEach {
+        config.patterns.forEach { (type, pattern) ->
+
+            val regex = Regex(pattern)
+
+            regex.findAll(code).forEach { match ->
+
                 tokens.add(
                     Token(
-                        value = it.value,
                         type = type,
-                        start = it.range.first,
-                        end = it.range.last
+                        value = match.value,
+                        start = match.range.first,
+                        end = match.range.last
                     )
                 )
             }
