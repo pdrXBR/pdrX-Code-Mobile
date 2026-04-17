@@ -1,7 +1,7 @@
 package com.pdrxcode.engine
 
 class LanguageEngine(
-    private val config: LanguageConfig
+    val config: LanguageConfig
 ) {
 
     private val tokenizer = Tokenizer(config)
