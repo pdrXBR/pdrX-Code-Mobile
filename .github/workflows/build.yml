@@ -22,12 +22,11 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # O segredo está aqui: dar permissão e usar o Wrapper do projeto
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         
       - name: Build APK
-        run: bash ./gradlew assembleDebug -x externalNativeBuild
+        run: ./gradlew assembleDebug -x externalNativeBuild
         
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
