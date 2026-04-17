@@ -1,16 +1,31 @@
+package com.pdrxcode.engine
+
 class TooltipEngine(
     private val engine: LanguageEngine
 ) {
 
     fun getTooltip(word: String): Tooltip? {
 
-        val data = engine.config.keywords[word] ?: return null
+        val keyword = engine.config.keywords[word]
+        if (keyword != null) {
+            return Tooltip(
+                name = word,
+                description = keyword.description,
+                syntax = keyword.syntax,
+                example = keyword.example
+            )
+        }
 
-        return Tooltip(
-            name = word,
-            description = data["description"] as? String ?: "",
-            syntax = data["syntax"] as? String ?: "",
-            example = data["example"] as? String ?: ""
-        )
+        val function = engine.config.functions[word]
+        if (function != null) {
+            return Tooltip(
+                name = word,
+                description = function.description,
+                syntax = function.syntax,
+                example = function.example
+            )
+        }
+
+        return null
     }
 }
