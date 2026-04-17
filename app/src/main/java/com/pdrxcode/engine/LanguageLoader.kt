@@ -7,45 +7,59 @@ object LanguageLoader {
 
     fun load(context: Context, fileName: String): LanguageConfig {
 
-        val json = context.assets.open("languages/$fileName")
+        val jsonString = context.assets.open(fileName)
             .bufferedReader()
             .use { it.readText() }
 
-        val obj = JSONObject(json)
+        val json = JSONObject(jsonString)
 
-        val patterns = obj.getJSONObject("patterns").toMap()
-        val keywords = obj.getJSONObject("keywords").toTooltips()
-        val functions = obj.getJSONObject("functions").toTooltips()
-        val colors = obj.getJSONObject("colors").toMap()
+        val keywords = mutableMapOf<String, LanguageItem>()
+        val functions = mutableMapOf<String, LanguageItem>()
+        val patterns = mutableMapOf<String, String>()
+        val colors = mutableMapOf<String, String>()
+
+        // 🔥 KEYWORDS
+        val keywordsJson = json.getJSONObject("keywords")
+        keywordsJson.keys().forEach { key ->
+            val item = keywordsJson.getJSONObject(key)
+
+            keywords[key] = LanguageItem(
+                description = item.getString("description"),
+                syntax = item.getString("syntax"),
+                example = item.getString("example")
+            )
+        }
+
+        // 🔥 FUNCTIONS
+        val functionsJson = json.getJSONObject("functions")
+        functionsJson.keys().forEach { key ->
+            val item = functionsJson.getJSONObject(key)
+
+            functions[key] = LanguageItem(
+                description = item.getString("description"),
+                syntax = item.getString("syntax"),
+                example = item.getString("example")
+            )
+        }
+
+        // 🔥 PATTERNS
+        val patternsJson = json.getJSONObject("patterns")
+        patternsJson.keys().forEach { key ->
+            patterns[key] = patternsJson.getString(key)
+        }
+
+        // 🔥 COLORS
+        val colorsJson = json.getJSONObject("colors")
+        colorsJson.keys().forEach { key ->
+            colors[key] = colorsJson.getString(key)
+        }
 
         return LanguageConfig(
-            language = obj.getString("language"),
+            language = json.getString("language"),
             patterns = patterns,
             keywords = keywords,
             functions = functions,
             colors = colors
         )
-    }
-
-    private fun JSONObject.toMap(): Map<String, String> {
-        val map = mutableMapOf<String, String>()
-        keys().forEach { key ->
-            map[key] = getString(key)
-        }
-        return map
-    }
-
-    private fun JSONObject.toTooltips(): Map<String, Tooltip> {
-        val map = mutableMapOf<String, Tooltip>()
-        keys().forEach { key ->
-            val obj = getJSONObject(key)
-            map[key] = Tooltip(
-                name = key,
-                description = obj.getString("description"),
-                syntax = obj.getString("syntax"),
-                example = obj.getString("example")
-            )
-        }
-        return map
     }
 }
