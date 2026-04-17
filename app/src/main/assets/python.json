@@ -1,0 +1,40 @@
+{
+  "language": "python",
+
+  "patterns": {
+    "keyword": "\\b(if|for|while|def|class|return)\\b",
+    "function": "\\b\\w+(?=\\()",
+    "string": "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'",
+    "number": "\\b\\d+\\b",
+    "comment": "#.*"
+  },
+
+  "keywords": {
+    "if": {
+      "description": "Estrutura condicional",
+      "syntax": "if condição:",
+      "example": "if x > 10:"
+    },
+    "for": {
+      "description": "Loop de repetição",
+      "syntax": "for item in lista:",
+      "example": "for i in range(5):"
+    }
+  },
+
+  "functions": {
+    "print": {
+      "description": "Imprime no console",
+      "syntax": "print(objeto)",
+      "example": "print('Olá')"
+    }
+  },
+
+  "colors": {
+    "keyword": "#569CD6",
+    "function": "#DCDCAA",
+    "string": "#CE9178",
+    "number": "#B5CEA8",
+    "comment": "#6A9955"
+  }
+}
