@@ -1,10 +1,14 @@
 package com.pdrxcode.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.pdrxcode.ui.screens.DebugScreen
+import com.pdrxcode.ui.screens.ExplorerScreen
+import com.pdrxcode.ui.screens.ExtensionsScreen
 import com.pdrxcode.ui.screens.HomeScreen
+import com.pdrxcode.ui.screens.SettingsScreen
 
 sealed class Screen(val route: String) {
     data object Home : Screen("home")
@@ -15,14 +19,18 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavGraph() {
-    val navController = rememberNavController()
-
+fun AppNavGraph(
+    navController: NavHostController,
+    startDestination: String = Screen.Home.route
+) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = startDestination
     ) {
         composable(Screen.Home.route) { HomeScreen() }
-        // Outras telas serão adicionadas nas etapas seguintes
+        composable(Screen.Explorer.route) { ExplorerScreen() }
+        composable(Screen.Settings.route) { SettingsScreen() }
+        composable(Screen.Extensions.route) { ExtensionsScreen() }
+        composable(Screen.Debug.route) { DebugScreen() }
     }
 }
