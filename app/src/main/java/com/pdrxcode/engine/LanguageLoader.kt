@@ -17,6 +17,7 @@ object LanguageLoader {
         val functions = mutableMapOf<String, LanguageItem>()
         val patterns = mutableMapOf<String, String>()
         val colors = mutableMapOf<String, String>()
+        val characters = mutableMapOf<String, Character>()
 
         // 🔥 KEYWORDS
         val keywordsJson = json.getJSONObject("keywords")
@@ -24,10 +25,10 @@ object LanguageLoader {
             val item = keywordsJson.getJSONObject(key)
 
             keywords[key] = LanguageItem(
-                name = key, // ✅ CORREÇÃO AQUI
-                description = item.optString("description"),
-                syntax = item.optString("syntax"),
-                example = item.optString("example")
+                name = key,
+                description = item.getString("description"),
+                syntax = item.getString("syntax"),
+                example = item.getString("example")
             )
         }
 
@@ -37,10 +38,10 @@ object LanguageLoader {
             val item = functionsJson.getJSONObject(key)
 
             functions[key] = LanguageItem(
-                name = key, // ✅ CORREÇÃO AQUI
-                description = item.optString("description"),
-                syntax = item.optString("syntax"),
-                example = item.optString("example")
+                name = key,
+                description = item.getString("description"),
+                syntax = item.getString("syntax"),
+                example = item.getString("example")
             )
         }
 
@@ -56,12 +57,24 @@ object LanguageLoader {
             colors[key] = colorsJson.getString(key)
         }
 
+        // 🔥 CHARACTERS (NOVO)
+        val charactersJson = json.optJSONObject("characters")
+        charactersJson?.keys()?.forEach { key ->
+            val item = charactersJson.getJSONObject(key)
+
+            characters[key] = Character(
+                name = key,
+                color = item.getString("color")
+            )
+        }
+
         return LanguageConfig(
             language = json.getString("language"),
             patterns = patterns,
             keywords = keywords,
             functions = functions,
-            colors = colors
+            colors = colors,
+            characters = characters
         )
     }
 }

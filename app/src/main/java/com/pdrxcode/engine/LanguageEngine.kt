@@ -14,7 +14,7 @@ class LanguageEngine(
         return config.colors[type] ?: "#D4D4D4"
     }
 
-    fun getCharacter(name: String): LanguageItem? {
+    fun getCharacter(name: String): Character? {
         return config.characters[name]
     }
 }

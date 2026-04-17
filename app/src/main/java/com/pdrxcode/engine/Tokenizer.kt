@@ -5,6 +5,7 @@ class Tokenizer(
 ) {
 
     fun tokenize(code: String): List<Token> {
+
         val tokens = mutableListOf<Token>()
 
         config.patterns.forEach { (type, pattern) ->
@@ -18,12 +19,13 @@ class Tokenizer(
                         type = type,
                         value = match.value,
                         start = match.range.first,
-                        end = match.range.last
+                        end = match.range.last + 1
                     )
                 )
             }
         }
 
+        // 🔥 IMPORTANTE: ordena tokens
         return tokens.sortedBy { it.start }
     }
 }
